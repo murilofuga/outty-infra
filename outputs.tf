@@ -54,3 +54,23 @@ output "artifact_registry_url" {
   value       = module.storage.repository_url
 }
 
+output "custom_domain_url" {
+  description = "Custom domain URL for Cloud Run service"
+  value       = module.dns.domain_url
+}
+
+output "dns_records" {
+  description = "DNS records that need to be added to Namecheap"
+  value       = module.dns.dns_records
+}
+
+output "domain_mapping_status" {
+  description = "Status of domain mapping"
+  value       = module.dns.domain_status
+}
+
+output "domain_ready" {
+  description = "Whether the domain mapping is ready (DNS records must be added first)"
+  value       = module.dns.domain_ready
+}
+

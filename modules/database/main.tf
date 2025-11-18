@@ -54,5 +54,9 @@ resource "google_sql_user" "user" {
   instance = google_sql_database_instance.instance.name
   password = var.database_password != "" ? var.database_password : random_password.db_password[0].result
   project  = var.project_id
+
+  lifecycle {
+    ignore_changes = [password]
+  }
 }
 

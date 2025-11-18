@@ -51,17 +51,18 @@ resource "google_cloud_run_v2_service" "service" {
       }
 
       env {
-        name  = "SPRING_DATASOURCE_URL"
-        value = "jdbc:mysql://localhost:3306/${var.database_name}?cloudSqlInstance=${var.cloud_sql_instance}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false&serverTimezone=UTC"
-      }
-
-      env {
         name  = "SPRING_DATASOURCE_USERNAME"
         value = var.database_user
       }
 
       env {
+        name  = "SPRING_DATASOURCE_URL"
+        value = "jdbc:mysql://localhost:3306/${var.database_name}?cloudSqlInstance=${var.cloud_sql_instance}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false"
+      }
+
+      env {
         name = "SPRING_DATASOURCE_PASSWORD"
+        
         value_source {
           secret_key_ref {
             secret  = "PROD_DB_PASSWORD"
@@ -130,6 +131,14 @@ resource "google_cloud_run_v2_service" "service" {
   traffic {
     percent = 100
     type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+  }
+
+  # Ignore metadata changes (annotations and labels are managed by GCP)
+  lifecycle {
+    ignore_changes = [
+      client,
+      client_version,
+    ]
   }
 }
 

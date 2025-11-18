@@ -93,6 +93,20 @@ module "compute" {
   artifact_registry_image = "us-east1-docker.pkg.dev/outty-prod/outty-prod-repo/outty-backend:latest"
 }
 
+# DNS Module (Custom Domain Mapping)
+module "dns" {
+  source = "./modules/dns"
+
+  project_id   = var.project_id
+  region       = var.region
+  domain       = "api.${var.domain}"
+  service_name = module.compute.service_name
+
+  depends_on = [
+    module.compute
+  ]
+}
+
 # CI/CD Module
 module "ci_cd" {
   source = "./modules/ci-cd"
