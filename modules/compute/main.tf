@@ -133,11 +133,14 @@ resource "google_cloud_run_v2_service" "service" {
     type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
   }
 
-  # Ignore metadata changes (annotations and labels are managed by GCP)
+  # Ignore template changes - Cloud Run deployments are managed by CI/CD
+  # Terraform only manages the service existence and IAM, not deployments
+  # This prevents Terraform from creating new revisions when updating infrastructure
   lifecycle {
     ignore_changes = [
       client,
       client_version,
+      template,  # Prevents Terraform from creating new revisions
     ]
   }
 }

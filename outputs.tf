@@ -54,23 +54,33 @@ output "artifact_registry_url" {
   value       = module.storage.repository_url
 }
 
+output "load_balancer_ip" {
+  description = "Load balancer static IP address (use this for DNS A record)"
+  value       = module.load_balancer.load_balancer_ip
+}
+
+output "ssl_certificate_status_note" {
+  description = "Command to check SSL certificate status"
+  value       = module.load_balancer.ssl_certificate_status_note
+}
+
+output "ssl_certificate_name" {
+  description = "Name of the managed SSL certificate"
+  value       = module.load_balancer.ssl_certificate_name
+}
+
 output "custom_domain_url" {
-  description = "Custom domain URL for Cloud Run service"
+  description = "Custom domain URL (HTTPS via load balancer)"
   value       = module.dns.domain_url
 }
 
 output "dns_records" {
-  description = "DNS records that need to be added to Namecheap"
+  description = "DNS A record that needs to be added to your DNS provider (e.g., Namecheap)"
   value       = module.dns.dns_records
 }
 
-output "domain_mapping_status" {
-  description = "Status of domain mapping"
-  value       = module.dns.domain_status
-}
-
-output "domain_ready" {
-  description = "Whether the domain mapping is ready (DNS records must be added first)"
-  value       = module.dns.domain_ready
+output "load_balancer_forwarding_rule" {
+  description = "Name of the global forwarding rule"
+  value       = module.load_balancer.forwarding_rule_name
 }
 

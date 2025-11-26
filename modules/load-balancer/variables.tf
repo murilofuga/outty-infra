@@ -8,18 +8,13 @@ variable "region" {
   type        = string
 }
 
-variable "domain" {
-  description = "Custom domain name (e.g., api.outty.app)"
-  type        = string
-}
-
 variable "service_name" {
   description = "Cloud Run service name"
   type        = string
 }
 
-variable "load_balancer_ip" {
-  description = "Load balancer static IP address"
+variable "domain" {
+  description = "Custom domain name (e.g., api.outty.app)"
   type        = string
 }
 

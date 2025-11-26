@@ -93,17 +93,32 @@ module "compute" {
   artifact_registry_image = "us-east1-docker.pkg.dev/outty-prod/outty-prod-repo/outty-backend:latest"
 }
 
-# DNS Module (Custom Domain Mapping)
-module "dns" {
-  source = "./modules/dns"
+# Load Balancer Module
+module "load_balancer" {
+  source = "./modules/load-balancer"
 
   project_id   = var.project_id
   region       = var.region
-  domain       = "api.${var.domain}"
   service_name = module.compute.service_name
+  domain       = "api.${var.domain}"
 
   depends_on = [
     module.compute
+  ]
+}
+
+# DNS Module (Outputs load balancer IP for DNS configuration)
+module "dns" {
+  source = "./modules/dns"
+
+  project_id      = var.project_id
+  region          = var.region
+  domain          = "api.${var.domain}"
+  service_name    = module.compute.service_name
+  load_balancer_ip = module.load_balancer.load_balancer_ip
+
+  depends_on = [
+    module.load_balancer
   ]
 }
 

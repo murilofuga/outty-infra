@@ -1,31 +1,21 @@
-output "domain_mapping_name" {
-  description = "Domain mapping resource name"
-  value       = google_cloud_run_domain_mapping.api_domain.name
-}
-
 output "domain_url" {
-  description = "Custom domain URL"
-  value       = "https://${google_cloud_run_domain_mapping.api_domain.name}"
+  description = "Custom domain URL (HTTPS via load balancer)"
+  value       = "https://${var.domain}"
 }
 
 output "dns_records" {
-  description = "DNS records that need to be added to Namecheap"
-  value = length(google_cloud_run_domain_mapping.api_domain.status) > 0 && length(google_cloud_run_domain_mapping.api_domain.status[0].resource_records) > 0 ? {
-    for record in google_cloud_run_domain_mapping.api_domain.status[0].resource_records : record.type => {
-      name   = record.name
-      type   = record.type
-      rrdata = record.rrdata
-    }
-  } : {}
+  description = "DNS A record that needs to be added to your DNS provider (e.g., Namecheap)"
+  value = {
+    type   = "A"
+    name   = var.domain
+    value  = var.load_balancer_ip
+    ttl    = 300
+    note   = "Point your domain to the load balancer IP address"
+  }
 }
 
-output "domain_status" {
-  description = "Status of domain mapping"
-  value = length(google_cloud_run_domain_mapping.api_domain.status) > 0 && length(google_cloud_run_domain_mapping.api_domain.status[0].conditions) > 0 ? google_cloud_run_domain_mapping.api_domain.status[0].conditions[0].status : "Unknown"
-}
-
-output "domain_ready" {
-  description = "Whether the domain mapping is ready (DNS records must be added first)"
-  value = length(google_cloud_run_domain_mapping.api_domain.status) > 0 && length(google_cloud_run_domain_mapping.api_domain.status[0].conditions) > 0 ? google_cloud_run_domain_mapping.api_domain.status[0].conditions[0].status == "True" : false
+output "load_balancer_ip" {
+  description = "Load balancer IP address for DNS configuration"
+  value       = var.load_balancer_ip
 }
 
