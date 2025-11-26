@@ -40,6 +40,11 @@ resource "google_compute_firewall" "allow_internal" {
 }
 
 # Firewall rule for SSH to bastion
+# IP whitelisting is managed dynamically via GCP Console
+# Default: deny all (empty source_ranges) - most secure
+# To add allowed IPs: GCP Console → VPC Network → Firewall → Edit rule → Add IPs to "Source IP ranges"
+# Use CIDR notation: e.g., "203.0.113.0/32" for single IP, "203.0.113.0/24" for subnet
+# Terraform ignores changes to source_ranges to allow manual management via UI
 resource "google_compute_firewall" "allow_ssh" {
   name    = "${var.project_id}-allow-ssh"
   network = google_compute_network.vpc.name
@@ -50,8 +55,16 @@ resource "google_compute_firewall" "allow_ssh" {
     ports    = ["22"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  # Default: deny all (empty list)
+  # IPs should be added via GCP Console for dynamic management
+  # Format: CIDR notation (e.g., "203.0.113.0/32" for single IP)
+  source_ranges = []
   target_tags   = ["bastion"]
+
+  # Ignore changes to source_ranges so Terraform doesn't overwrite manual IP updates
+  lifecycle {
+    ignore_changes = [source_ranges]
+  }
 }
 
 # Firewall rule for Cloud Run health checks
