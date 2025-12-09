@@ -65,12 +65,21 @@ resource "google_compute_managed_ssl_certificate" "api_ssl_cert" {
   }
 }
 
+# SSL Policy
+resource "google_compute_ssl_policy" "api_ssl_policy" {
+  name            = "${var.service_name}-ssl-policy"
+  project         = var.project_id
+  min_tls_version = "TLS_1_2"
+  profile         = "MODERN"
+}
+
 # Target HTTPS Proxy
 resource "google_compute_target_https_proxy" "cloud_run_https_proxy" {
   name             = "${var.service_name}-https-proxy"
   project          = var.project_id
   url_map          = google_compute_url_map.cloud_run_url_map.id
   ssl_certificates = [google_compute_managed_ssl_certificate.api_ssl_cert.id]
+  ssl_policy       = google_compute_ssl_policy.api_ssl_policy.id
 }
 
 # Global Forwarding Rule

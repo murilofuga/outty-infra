@@ -12,10 +12,10 @@ resource "google_project_iam_member" "cloud_sql_client" {
   member  = "serviceAccount:${google_service_account.cloud_run.email}"
 }
 
-# Grant Storage Object Viewer role (for reading from bucket)
-resource "google_project_iam_member" "storage_object_viewer" {
+# Grant Storage Object Admin role at project level (applies to all buckets)
+resource "google_project_iam_member" "storage_object_admin" {
   project = var.project_id
-  role    = "roles/storage.objectViewer"
+  role    = "roles/storage.objectAdmin"
   member  = "serviceAccount:${google_service_account.cloud_run.email}"
 }
 
