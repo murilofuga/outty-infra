@@ -122,6 +122,28 @@ module "dns" {
   ]
 }
 
+# Job Worker Module (VM for processing background jobs)
+module "job_worker" {
+  source = "./modules/job-worker"
+
+  project_id          = var.project_id
+  region              = var.region
+  zone                = var.zone
+  network             = module.network.vpc_network_name
+  subnet              = module.network.subnet_name
+  cloud_sql_instance  = module.database.instance_connection_name
+  database_name       = var.database_name
+  database_user       = var.database_user
+  database_password   = var.database_password
+  machine_type        = var.job_worker_machine_type
+  artifact_registry_image = "us-east1-docker.pkg.dev/outty-prod/outty-prod-repo/outty-backend:latest"
+
+  depends_on = [
+    module.database,
+    module.storage
+  ]
+}
+
 # CI/CD Module
 module "ci_cd" {
   source = "./modules/ci-cd"

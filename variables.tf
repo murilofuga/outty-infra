@@ -106,3 +106,9 @@ variable "bastion_ssh_public_key" {
   default     = ""
 }
 
+variable "job_worker_machine_type" {
+  description = "Job worker VM machine type"
+  type        = string
+  default     = "e2-small"
+}
+
