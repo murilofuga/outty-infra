@@ -12,17 +12,17 @@ database_name          = "outty_db"
 database_user          = "outty_user"
 database_password      = "CHANGE_THIS_PASSWORD" # Use a strong password
 
-# Cloud Run configuration (dev-optimized: reduced CPU/memory and max instances)
-cloud_run_cpu          = "0.5"
-cloud_run_memory       = "512Mi"
+# Cloud Run configuration
+cloud_run_cpu          = "1"
+cloud_run_memory       = "1Gi"
 cloud_run_min_instances = 0
-cloud_run_max_instances = 1
+cloud_run_max_instances = 2
 
 # Bastion configuration
 bastion_machine_type = "e2-micro"
 
-# Job Worker configuration (dev-optimized: smallest machine type)
-job_worker_machine_type = "e2-micro"
+# Job Worker configuration
+job_worker_machine_type = "e2-small"
 
 # Service name
 service_name = "outty-backend"
@@ -30,4 +30,3 @@ service_name = "outty-backend"
 # GitHub configuration (optional - triggers will only be created if both are provided)
 github_owner = ""  # e.g., "your-username" or "your-org"
 github_repo  = ""  # e.g., "outty-backend"
-

@@ -87,14 +87,14 @@ resource "google_compute_firewall" "allow_cloud_run_health_checks" {
 
 # VPC Connector for Cloud Run
 resource "google_vpc_access_connector" "connector" {
-  name          = "${var.project_id}-vpc-connector"
+  name          = "dev-vpc-connector"
   region        = var.region
   project       = var.project_id
   network       = google_compute_network.vpc.name
   ip_cidr_range = "10.8.0.0/28"
 
-  min_instances = 2
-  max_instances = 3
+  min_instances = var.vpc_connector_min_instances
+  max_instances = var.vpc_connector_max_instances
   machine_type  = "e2-micro"
 }
 

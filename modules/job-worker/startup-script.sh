@@ -72,11 +72,11 @@ echo "Fetching secret, authenticating docker and starting container..."
 
 # 1. Force Docker to authenticate using the VM's service account identity
 # This is the most reliable way for systemd services to pull from AR
-gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${REGION}-docker.pkg.dev
+gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${region}-docker.pkg.dev
 
 # 2. Fetch DB Password from Secret Manager
 # Note: Use single $ because this runs on the VM shell
-DB_PASSWORD=$(gcloud secrets versions access latest --secret=${DB_SECRET_NAME})
+DB_PASSWORD=$(gcloud secrets versions access latest --secret=${db_secret_name})
 
 # Pull and Clean
 docker pull $${IMAGE}

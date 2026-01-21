@@ -118,3 +118,15 @@ variable "db_secret_name" {
   default     = null
 }
 
+variable "vpc_connector_min_instances" {
+  description = "Minimum VPC connector instances"
+  type        = number
+  default     = 2
+}
+
+variable "vpc_connector_max_instances" {
+  description = "Maximum VPC connector instances"
+  type        = number
+  default     = 3
+}
+

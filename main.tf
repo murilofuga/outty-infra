@@ -32,15 +32,22 @@ locals {
   
   # Construct secret name from environment if not explicitly provided
   db_secret_name = var.db_secret_name != null ? var.db_secret_name : "${upper(var.environment)}_DB_PASSWORD"
+  
+  # Set VPC connector instances based on environment (dev uses fewer instances)
+  # Note: GCP requires minimum 2 instances for VPC connectors, and min must be < max
+  vpc_connector_min_instances = var.environment == "dev" ? 2 : var.vpc_connector_min_instances
+  vpc_connector_max_instances = var.environment == "dev" ? 3 : var.vpc_connector_max_instances
 }
 
 # Network Module
 module "network" {
   source = "./modules/network"
 
-  project_id = var.project_id
-  region     = var.region
-  zone       = var.zone
+  project_id                  = var.project_id
+  region                      = var.region
+  zone                        = var.zone
+  vpc_connector_min_instances = local.vpc_connector_min_instances
+  vpc_connector_max_instances = local.vpc_connector_max_instances
 }
 
 # Database Module
