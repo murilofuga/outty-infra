@@ -25,11 +25,11 @@ resource "google_project_iam_member" "cloud_build_artifact_writer" {
 }
 
 # Cloud Build Triggers are managed manually in GCP Console
-# The triggers (prod-release-trigger and prod-deploy-trigger) already exist
-# and are configured for manual invocation only.
+# The triggers ({environment}-release-trigger and {environment}-deploy-trigger) should be created
+# and configured for manual invocation only.
 # 
 # To update them, use the GCP Console or gcloud CLI:
-# - gcloud builds triggers describe prod-release-trigger --region=us-east1
+# - gcloud builds triggers describe {environment}-release-trigger --region={region}
 # - gcloud builds triggers update ...
 #
 # Note: Terraform cannot easily manage triggers that use source_to_build with

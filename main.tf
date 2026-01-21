@@ -14,7 +14,7 @@ terraform {
 
   # Backend configuration - uncomment and configure after creating GCS bucket
   # backend "gcs" {
-  #   bucket = "outty-prod-terraform-state"
+  #   bucket = "${var.project_id}-terraform-state"
   #   prefix = "terraform/state"
   # }
 }
@@ -23,6 +23,15 @@ provider "google" {
   project = var.project_id
   region  = var.region
   zone    = var.zone
+}
+
+# Local values for computed configurations
+locals {
+  # Construct artifact registry image path dynamically
+  artifact_registry_image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.project_id}-repo/${var.service_name}:latest"
+  
+  # Construct secret name from environment if not explicitly provided
+  db_secret_name = var.db_secret_name != null ? var.db_secret_name : "${upper(var.environment)}_DB_PASSWORD"
 }
 
 # Network Module
@@ -89,8 +98,10 @@ module "compute" {
   memory                  = var.cloud_run_memory
   min_instances           = var.cloud_run_min_instances
   max_instances           = var.cloud_run_max_instances
+  environment             = var.environment
+  db_secret_name          = local.db_secret_name
   # Using placeholder image - will be replaced when real image is pushed
-  artifact_registry_image = "us-east1-docker.pkg.dev/outty-prod/outty-prod-repo/outty-backend:latest"
+  artifact_registry_image = local.artifact_registry_image
 }
 
 # Load Balancer Module
@@ -126,17 +137,19 @@ module "dns" {
 module "job_worker" {
   source = "./modules/job-worker"
 
-  project_id          = var.project_id
-  region              = var.region
-  zone                = var.zone
-  network             = module.network.vpc_network_name
-  subnet              = module.network.subnet_name
-  cloud_sql_instance  = module.database.instance_connection_name
-  database_name       = var.database_name
-  database_user       = var.database_user
-  database_password   = var.database_password
-  machine_type        = var.job_worker_machine_type
-  artifact_registry_image = "us-east1-docker.pkg.dev/outty-prod/outty-prod-repo/outty-backend:latest"
+  project_id              = var.project_id
+  region                  = var.region
+  zone                    = var.zone
+  network                 = module.network.vpc_network_name
+  subnet                  = module.network.subnet_name
+  cloud_sql_instance      = module.database.instance_connection_name
+  database_name           = var.database_name
+  database_user           = var.database_user
+  database_password       = var.database_password
+  machine_type            = var.job_worker_machine_type
+  environment             = var.environment
+  db_secret_name          = local.db_secret_name
+  artifact_registry_image = local.artifact_registry_image
 
   depends_on = [
     module.database,

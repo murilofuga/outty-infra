@@ -19,7 +19,7 @@ resource "google_project_iam_member" "storage_object_admin" {
   member  = "serviceAccount:${google_service_account.job_worker.email}"
 }
 
-# Grant Secret Manager Secret Accessor role (for reading PROD_DB_PASSWORD)
+# Grant Secret Manager Secret Accessor role (for reading database password secret)
 resource "google_project_iam_member" "secret_manager_accessor" {
   project = var.project_id
   role    = "roles/secretmanager.secretAccessor"
@@ -66,11 +66,13 @@ resource "google_compute_instance" "job_worker" {
   }
 
   metadata_startup_script = templatefile("${path.module}/startup-script.sh", {
-    cloud_sql_instance = var.cloud_sql_instance
-    database_name      = var.database_name
-    database_user      = var.database_user
+    cloud_sql_instance     = var.cloud_sql_instance
+    database_name          = var.database_name
+    database_user          = var.database_user
     artifact_registry_image = var.artifact_registry_image
-    project_id        = var.project_id
+    project_id             = var.project_id
+    region                  = var.region
+    db_secret_name          = var.db_secret_name
   })
 
   # Allow VM to be stopped/started without Terraform destroying it

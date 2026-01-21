@@ -19,7 +19,7 @@ resource "google_project_iam_member" "storage_object_admin" {
   member  = "serviceAccount:${google_service_account.cloud_run.email}"
 }
 
-# Grant Secret Manager Secret Accessor role (for reading PROD_DB_PASSWORD)
+# Grant Secret Manager Secret Accessor role (for reading database password secret)
 resource "google_project_iam_member" "secret_manager_accessor" {
   project = var.project_id
   role    = "roles/secretmanager.secretAccessor"
@@ -65,7 +65,7 @@ resource "google_cloud_run_v2_service" "service" {
         
         value_source {
           secret_key_ref {
-            secret  = "PROD_DB_PASSWORD"
+            secret  = var.db_secret_name
             version = "latest"
           }
         }
@@ -73,7 +73,7 @@ resource "google_cloud_run_v2_service" "service" {
 
       env {
         name  = "SPRING_PROFILES_ACTIVE"
-        value = "prod"
+        value = var.environment
       }
 
       env {

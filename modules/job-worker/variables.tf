@@ -54,3 +54,13 @@ variable "artifact_registry_image" {
   description = "Docker image from Artifact Registry (e.g., us-east1-docker.pkg.dev/project/repo/image:tag)"
   type        = string
 }
+
+variable "environment" {
+  description = "Environment name (e.g., prod, dev)"
+  type        = string
+}
+
+variable "db_secret_name" {
+  description = "Secret Manager secret name for database password"
+  type        = string
+}

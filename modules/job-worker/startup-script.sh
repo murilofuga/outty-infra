@@ -12,6 +12,8 @@ DATABASE_NAME="${database_name}"
 DATABASE_USER="${database_user}"
 ARTIFACT_REGISTRY_IMAGE="${artifact_registry_image}"
 PROJECT_ID="${project_id}"
+REGION="${region}"
+DB_SECRET_NAME="${db_secret_name}"
 
 # Redirect all script output to a log file for debugging
 exec > >(tee -a /var/log/startup-script-main.log) 2>&1
@@ -70,11 +72,11 @@ echo "Fetching secret, authenticating docker and starting container..."
 
 # 1. Force Docker to authenticate using the VM's service account identity
 # This is the most reliable way for systemd services to pull from AR
-gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us-east1-docker.pkg.dev
+gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${REGION}-docker.pkg.dev
 
 # 2. Fetch DB Password from Secret Manager
 # Note: Use single $ because this runs on the VM shell
-DB_PASSWORD=$(gcloud secrets versions access latest --secret=PROD_DB_PASSWORD)
+DB_PASSWORD=$(gcloud secrets versions access latest --secret=${DB_SECRET_NAME})
 
 # Pull and Clean
 docker pull $${IMAGE}

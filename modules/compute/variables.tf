@@ -68,3 +68,13 @@ variable "artifact_registry_image" {
   type        = string
 }
 
+variable "environment" {
+  description = "Environment name (e.g., prod, dev)"
+  type        = string
+}
+
+variable "db_secret_name" {
+  description = "Secret Manager secret name for database password"
+  type        = string
+}
+

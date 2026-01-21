@@ -112,3 +112,9 @@ variable "job_worker_machine_type" {
   default     = "e2-small"
 }
 
+variable "db_secret_name" {
+  description = "Secret Manager secret name for database password. If not provided, will be constructed from environment (e.g., PROD_DB_PASSWORD, DEV_DB_PASSWORD)"
+  type        = string
+  default     = null
+}
+
