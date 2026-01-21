@@ -1,0 +1,63 @@
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args:
+      - run
+      - services
+      - update
+      - ${_SERVICE_NAME}
+      - '--image'
+      - >-
+        ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY}/${_SERVICE_NAME}:${_VERSION}
+      - '--region'
+      - ${_REGION}
+      - '--platform'
+      - managed
+      - '--vpc-connector'
+      - projects/${PROJECT_ID}/locations/${_REGION}/connectors/${_VPC_CONNECTOR}
+      - '--vpc-egress'
+      - private-ranges-only
+      - '--add-cloudsql-instances'
+      - ${_CLOUD_SQL_INSTANCE}
+      - '--cpu'
+      - ${_CPU}
+      - '--memory'
+      - ${_MEMORY}
+      - '--min-instances'
+      - ${_MIN_INSTANCES}
+      - '--max-instances'
+      - ${_MAX_INSTANCES}
+      - '--set-env-vars'
+      - >-
+        SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/${_DATABASE_NAME}?cloudSqlInstance=${_CLOUD_SQL_INSTANCE}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false,SPRING_PROFILES_ACTIVE=prod
+    id: deploy-cloud-run
+    entrypoint: gcloud
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args:
+      - compute
+      - instances
+      - reset
+      - ${_JOB_WORKER_INSTANCE}
+      - '--zone=${_JOB_WORKER_ZONE}'
+      - '--project=${_PROJECT_ID}'
+    id: restart-worker
+    entrypoint: gcloud
+options:
+  logging: CLOUD_LOGGING_ONLY
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+substitutions:
+  _SERVICE_NAME: outty-backend
+  _CLOUD_SQL_INSTANCE: outty-dev-485013:us-east1:outty-dev-485013-mysql
+  _DATABASE_PASSWORD: ''
+  _PROJECT_ID: outty-dev-485013
+  _ARTIFACT_REGISTRY: outty-dev-485013-repo
+  _MAX_INSTANCES: '1'
+  _MEMORY: 512Mi
+  _CPU: '0.5'
+  _MIN_INSTANCES: '0'
+  _DATABASE_USER: outty_user_dev
+  _JOB_WORKER_ZONE: us-east1-b
+  _VERSION: latest
+  _REGION: us-east1
+  _JOB_WORKER_INSTANCE: outty-dev-485013-job-worker
+  _DATABASE_NAME: outty_db_dev
+  _VPC_CONNECTOR: dev-vpc-connector

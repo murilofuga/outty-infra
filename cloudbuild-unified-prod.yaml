@@ -1,0 +1,38 @@
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - builds
+      - triggers
+      - run
+      - ${_RELEASE_TRIGGER}
+      - '--project'
+      - $PROJECT_ID
+      - '--region'
+      - us-east1
+      - '--substitutions=_VERSION=${_VERSION}'
+    id: Trigger Test Release
+    entrypoint: gcloud
+  - name: ubuntu
+    args:
+      - '240'
+    id: Wait 3 Minutes
+    entrypoint: sleep
+    timeout: 300s
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - builds
+      - triggers
+      - run
+      - ${_DEPLOY_TRIGGER}
+      - '--project'
+      - $PROJECT_ID
+      - '--region'
+      - us-east1
+      - '--substitutions=_VERSION=${_VERSION}'
+    id: Trigger Prod Deploy
+    entrypoint: gcloud
+options:
+  logging: CLOUD_LOGGING_ONLY
+substitutions:
+  _RELEASE_TRIGGER: test-release
+  _DEPLOY_TRIGGER: prod-deploy-trigger
